@@ -3,8 +3,9 @@
 3. Запустить worker celery (`run_worker.py`), запустить задачу celery (`run_tasks.py`)  
 4. Определимть переменные окружения в .env  
    `AUTH` - данные из localStorage из web telegramm    
-   Выполнить команты в консоли браузера chrome  
+
    Предварительно данные надо получить из localStorage веб версии телеграмм  
+   Выполнить команты в консоли браузера chrome  
    `localStorage.removeItem('tt-global-state')`  
    `JSON.stringify(localStorage)`
 
