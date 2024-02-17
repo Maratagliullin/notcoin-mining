@@ -8,4 +8,4 @@
    `localStorage.removeItem('tt-global-state')`  
    `JSON.stringify(localStorage)`
 
-   TELEGRAM_TOKEN - токет телеграмм бота  
+   TELEGRAM_TOKEN - токен телеграмм бота для отправки информации по статистике майнинга  
