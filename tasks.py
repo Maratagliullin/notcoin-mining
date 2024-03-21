@@ -3,6 +3,8 @@ import random
 import re
 import sys
 import time
+import json
+
 from datetime import datetime
 from urllib.parse import unquote
 
@@ -37,9 +39,11 @@ chat_list = []
 delay_seconds = 180
 
 # Загрузка переменных окружения
-load_dotenv()
-AUTH = os.environ.get('AUTH').replace('\\\\', '\\')
+load_dotenv(verbose=True, override=True)
+AUTH = os.environ.get('AUTH')
+LocalStorage = json.loads(AUTH)
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+
 
 # Инициализация Телеграмм бота
 updater = Updater(token=TELEGRAM_TOKEN)
@@ -195,7 +199,7 @@ def open_webpage(self):
 
     updater.dispatcher.add_handler(
         MessageHandler(Filters.text, bot_initialize))
-    updater.start_polling()
+    updater.start_polling(timeout=600)
 
     # Проверка установки переменных окружения
     if not AUTH and not TELEGRAM_TOKEN:
@@ -222,18 +226,14 @@ def open_webpage(self):
 
     # Установка переменной окружения в браузер
     set_localstorage_script = f'''
-        var data = {AUTH};
-        for (var key in data) {{
-            localStorage.setItem(key, JSON.parse(data[key]));
-        }}
+    var data = { LocalStorage }
+    for (var key in data) {{
+        localStorage.setItem(key, data[key]);
+    }}
     '''
     driver.execute_script(set_localstorage_script)
-
     time.sleep(5)
     driver.refresh()
-    time.sleep(5)
-
-    get_page(url, driver)
 
     # Ожидание появления элемента кнопки Play
     timeout = 20
@@ -247,6 +247,10 @@ def open_webpage(self):
         send_message_telegramm(message)
         print(message)
         driver.quit()
+    except TimeoutException:
+        driver.quit()
+    except Exception:
+        driver.quit()
 
     # Ожидание появления элемента кнопки Launch
     timeout = 20
@@ -259,6 +263,10 @@ def open_webpage(self):
         message = 'Launch button not found'
         send_message_telegramm(message)
         print(message)
+        driver.quit()
+    except TimeoutException:
+        driver.quit()
+    except Exception:
         driver.quit()
 
     time.sleep(10)
@@ -352,6 +360,3 @@ def open_webpage(self):
                     ''')
                 updater.stop()
                 raise self.retry(countdown=delay_seconds)
-
-
-open_webpage.apply_async(args=[])
